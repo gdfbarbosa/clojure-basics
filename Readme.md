@@ -12,6 +12,7 @@ Playground project for experimentation and learning of Clojure features:
 Requirements:
 
 * JDK 11
+* Maven
 * Homebrew
 * SDKMAN
 
@@ -59,4 +60,4 @@ hello world
 * [Cursive - IntelliJ Plugin](https://cursive-ide.com/)
 * [Datomic](https://www.datomic.com/)
 * [SDKMAN](https://sdkman.io/)
-* [Homebrew]()
+* [Homebrew](https://brew.sh/)
