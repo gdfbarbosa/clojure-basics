@@ -6,6 +6,6 @@
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [prismatic/schema "1.4.1"]
                  [org.clojure/test.check "1.1.0"]
-                 [com.datomic/datomic-pro "1.0.6165"]]
+                 [com.datomic/datomic-pro "1.0.6527"]]
 
   :repl-options {:init-ns clojure-basics.basics})
