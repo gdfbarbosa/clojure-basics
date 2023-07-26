@@ -30,16 +30,19 @@
 
 (s/defn new-product :- Product
   ([name slug price digital]
-   (new-product (uuid) name slug price digital))
-  ([uuid name slug price digital]
-   (new-product uuid name slug price digital 0))
-  ([uuid name slug price digital stock]
+   (new-product (uuid) name slug price digital (rand-int 10000)))
+  ([name slug price digital seq]
+   (new-product (uuid) name slug price digital seq))
+  ([uuid name slug price digital seq]
+   (new-product uuid name slug price digital 0 seq))
+  ([uuid name slug price digital stock seq]
    {:product/id      uuid
     :product/name    name
     :product/slug    slug
     :product/price   price
     :product/stock   stock
-    :product/digital digital}))
+    :product/digital digital
+    :product/seq     seq}))
 
 
 (s/defn new-category :- Category

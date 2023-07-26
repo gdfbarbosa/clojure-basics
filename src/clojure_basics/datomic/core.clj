@@ -20,15 +20,16 @@
 (db/initialize-schema db-uri db/category-schema)
 (db/initialize-schema db-uri db/variant-schema)
 (db/load-categories db-uri)
-(db/load-products db-uri)
+(db/load-products db-uri 10000)
 
-(db/associate-category-to-product db-uri "Category A" "Product A")
-(db/associate-category-to-product db-uri "Category B" "Product B")
-(db/associate-category-to-product db-uri "Category A" "Product C")
+(db/associate-category-to-product db-uri "Category A" "Product 1")
+(db/associate-category-to-product db-uri "Category B" "Product 2")
+(db/associate-category-to-product db-uri "Category A" "Product 3")
 
 ; queries
 (db/find-all-categories db-uri)
-(db/find-all-products db-uri)
+(def time1 (time (take 100 (db/find-all-products db-uri))))
+(def time2 (time (db/find-first-page-of-products db-uri 247 100)))
 (db/find-category-id-by-name db-uri "Category A")
 (db/find-products-by-category db-uri "Category A")
 (db/find-products-by-category-backward-navigation db-uri "Category A")

@@ -14,10 +14,17 @@
                       :db/cardinality :db.cardinality/one}
                      {:db/ident       :product/name
                       :db/valueType   :db.type/string
+                      :db/index       true
                       :db/cardinality :db.cardinality/one
                       :db/doc         "Name of the product in catalog"}
+                     {:db/ident       :product/seq
+                      :db/valueType   :db.type/long
+                      :db/index       true
+                      :db/cardinality :db.cardinality/one
+                      :db/doc         "Just a sequential number"}
                      {:db/ident       :product/slug
                       :db/valueType   :db.type/string
+                      :db/index       true
                       :db/cardinality :db.cardinality/one
                       :db/doc         "Product slug"}
                      {:db/ident       :product/price
@@ -81,6 +88,41 @@
 
 (def products [(model/new-product "Product A" "/product_a" 100.0M false)
                (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
+               (model/new-product "Product B" "/product_b" 200.0M true)
                (model/new-product "Product C" "/product_c" 300.0M false)])
 
 ; datalog rules
@@ -109,8 +151,21 @@
 (defn load-categories [db-uri]
   (d/transact (open-connection db-uri) categories))
 
-(defn load-products [db-uri]
-  (d/transact (open-connection db-uri) products))
+(defn create-product [n]
+  (model/new-product
+    (str "Product " n)
+    (str "/product_" n)
+    (bigdec (rand-int 10000))
+    false
+    n))
+
+(defn build-products [quantity]
+    (->> (range 1 quantity)
+         (mapv create-product)
+         conj))
+
+(defn load-products [db-uri quantity]
+  (d/transact (open-connection db-uri) (build-products quantity)))
 
 ; utils
 (defn dissoc-db-id [entity]
@@ -126,6 +181,14 @@
                                            :where [?e :category/name ?category]] (d/db (open-connection db-uri))))
 (defn find-all-products [db-uri] (d/q '[:find [(pull ?e [*]) ...]
                                          :where [?e :product/name ?product]] (d/db (open-connection db-uri))))
+(defn find-first-page-of-products [db-uri offset page-size]
+  (seq (d/index-pull
+          (d/db (open-connection db-uri))
+          {:index    :avet
+           :selector '[*]
+           :start    [:product/seq offset]
+           :limit    page-size})))
+
 (defn find-products-by-category [db-uri category-name]
   (d/q '[:find [(pull ?product [:product/name :product/slug {:product/category [:category/name]}]) ...]
          :in $ ?category-name
